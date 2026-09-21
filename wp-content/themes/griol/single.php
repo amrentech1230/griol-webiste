@@ -39,8 +39,14 @@
     $gbf_intro = get_post_meta($post_id, '_gbf_intro', true);
 
     if ($gbf_intro) :
-        // Helper: render bullet lines (lines starting with -)
+        // Helper: render stored content.
+        // Rich-text fields now store real HTML (from TinyMCE); output it safely
+        // with wp_kses_post so bullet lists etc. are not double-escaped. Fall back
+        // to the legacy newline/"- " bullet parsing for older plain-text posts.
         function gbf_render_text($text) {
+            if ($text !== strip_tags($text)) {
+                return wp_kses_post($text);
+            }
             $lines = explode("\n", trim($text));
             $out = ''; $in_ul = false;
             foreach ($lines as $line) {
@@ -105,7 +111,7 @@
             $btn_url   = $g('cta_button_url')   ?: home_url('/contact');
             echo '<div class="gbf-cta-block">';
             echo '<h3>' . esc_html($g('cta_heading')) . '</h3>';
-            if ($g('cta_text')) echo '<p>' . esc_html($g('cta_text')) . '</p>';
+            if ($g('cta_text')) echo '<div class="gbf-cta-text">' . wp_kses_post($g('cta_text')) . '</div>';
             echo '<a href="' . esc_url($btn_url) . '" class="btn-fire">' . esc_html($btn_label) . '</a>';
             echo '</div>';
         endif;
@@ -157,7 +163,12 @@
                     echo '<span class="gbf-acc-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></span>';
                     echo '</button>';
                     echo '<div class="gbf-acc-panel">';
-                    echo '<p class="gbf-acc-a">' . esc_html($item['a'] ?? '') . '</p>';
+                    $answer = $item['a'] ?? '';
+                    if ($answer !== strip_tags($answer)) {
+                        echo '<div class="gbf-acc-a">' . wp_kses_post($answer) . '</div>';
+                    } else {
+                        echo '<p class="gbf-acc-a">' . esc_html($answer) . '</p>';
+                    }
                     echo '</div>';
                     echo '</div>';
                 endforeach;
