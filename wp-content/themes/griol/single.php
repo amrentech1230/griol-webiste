@@ -44,7 +44,10 @@
         // with wp_kses_post so bullet lists etc. are not double-escaped. Fall back
         // to the legacy newline/"- " bullet parsing for older plain-text posts.
         function gbf_render_text($text) {
-            if ($text !== strip_tags($text)) {
+            // Detect real HTML tags (not stray "<" chars in legacy plain text
+            // such as "a<b" or "use <this>"). Only a tag-shaped match routes
+            // through wp_kses_post; otherwise fall back to the legacy parser.
+            if (preg_match('/<[a-z!\/][^>]*>/i', $text)) {
                 return wp_kses_post($text);
             }
             $lines = explode("\n", trim($text));
@@ -164,7 +167,10 @@
                     echo '</button>';
                     echo '<div class="gbf-acc-panel">';
                     $answer = $item['a'] ?? '';
-                    if ($answer !== strip_tags($answer)) {
+                    // Same tag-shaped check as gbf_render_text(): only real HTML
+                    // tags render as HTML; legacy plain text with a stray "<"
+                    // keeps its original escaped rendering.
+                    if (preg_match('/<[a-z!\/][^>]*>/i', $answer)) {
                         echo '<div class="gbf-acc-a">' . wp_kses_post($answer) . '</div>';
                     } else {
                         echo '<p class="gbf-acc-a">' . esc_html($answer) . '</p>';
