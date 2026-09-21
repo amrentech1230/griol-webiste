@@ -1,8 +1,16 @@
 <?php
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('inter', 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap', [], null);
-    wp_enqueue_style('griol', get_stylesheet_uri(), ['inter'], '1.0');
-    wp_enqueue_script('griol', get_template_directory_uri() . '/assets/main.js', [], '1.0', true);
+
+    // Cache-bust CSS/JS off the file modification time so browsers always
+    // pick up the latest version (avoids stale accordion JS being served).
+    $style_path  = get_stylesheet_directory() . '/style.css';
+    $script_path = get_template_directory() . '/assets/main.js';
+    $style_ver   = file_exists($style_path)  ? filemtime($style_path)  : '1.0';
+    $script_ver  = file_exists($script_path) ? filemtime($script_path) : '1.0';
+
+    wp_enqueue_style('griol', get_stylesheet_uri(), ['inter'], $style_ver);
+    wp_enqueue_script('griol', get_template_directory_uri() . '/assets/main.js', [], $script_ver, true);
     wp_localize_script('griol', 'griolAjax', [
         'url' => admin_url('admin-ajax.php'),
     ]);
@@ -82,6 +90,22 @@ add_action('add_meta_boxes', function () {
     );
 });
 
+// Load the TinyMCE / editor assets on the Post editor screen so wp_editor()
+// and the dynamic FAQ editors (wp.editor.initialize / removeEditor) work.
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== 'post.php' && $hook !== 'post-new.php') {
+        return;
+    }
+    $screen = function_exists('get_current_screen') ? get_current_screen() : null;
+    if ($screen && $screen->post_type !== 'post') {
+        return;
+    }
+    if (function_exists('wp_enqueue_editor')) {
+        wp_enqueue_editor();
+    }
+    wp_enqueue_script('editor');
+});
+
 function griol_blog_format_render($post) {
     wp_nonce_field('griol_blog_format_save', 'griol_blog_format_nonce');
     $f = function($key) use ($post) {
@@ -119,16 +143,35 @@ function griol_blog_format_render($post) {
         .gbf-faq-count{font-size:12px;color:#888;margin-left:8px;}
     </style>';
     echo '<div class="gbf-notice">Fill in these fields to use the <strong>Griol Blog Format</strong>. Leave all blank to use the standard post editor content instead.</div>';
+
+    // Content fields that get a full TinyMCE rich-text editor (bullet lists, etc.).
+    // cta_heading / cta_button_label stay plain textareas (single-line labels),
+    // cta_button_url stays a plain text input.
+    $rich_keys = ['intro','why_important','understanding','key_factors','cta_text','common_issues','best_practices','conclusion'];
+
     foreach ($fields as $key => [$label, $hint]) {
-        $val = $f($key);
-        $tag = ($key === 'cta_button_url') ? 'input' : 'textarea';
         echo '<div class="gbf-field">';
         echo '<label for="gbf_' . $key . '">' . esc_html($label) . '</label>';
         echo '<small>' . esc_html($hint) . '</small>';
-        if ($tag === 'input') {
+        if (in_array($key, $rich_keys, true)) {
+            // Rich-text editor. Editor id 'gbf_<key>' is unique per field;
+            // textarea_name keeps the POST key identical to the plain-textarea
+            // version ($_POST['gbf_<key>']), so save_post needs no changes here.
+            wp_editor(
+                get_post_meta($post->ID, '_gbf_' . $key, true), // raw value; wp_editor handles escaping
+                'gbf_' . $key,
+                [
+                    'textarea_name' => 'gbf_' . $key,
+                    'media_buttons' => false,
+                    'textarea_rows' => 8,
+                    'tinymce'       => true,
+                    'quicktags'     => true,
+                ]
+            );
+        } elseif ($key === 'cta_button_url') {
             echo '<input type="text" id="gbf_' . $key . '" name="gbf_' . $key . '" value="' . esc_attr(get_post_meta($post->ID, '_gbf_' . $key, true)) . '">';
         } else {
-            echo '<textarea id="gbf_' . $key . '" name="gbf_' . $key . '">' . $val . '</textarea>';
+            echo '<textarea id="gbf_' . $key . '" name="gbf_' . $key . '">' . $f($key) . '</textarea>';
         }
         echo '</div>';
     }
@@ -144,11 +187,12 @@ function griol_blog_format_render($post) {
             <div id="gbf-faq-rows">
                 <?php foreach ($existing_faqs as $i => $item): ?>
                 <div class="gbf-faq-row">
-                    <button type="button" class="gbf-faq-remove" onclick="this.closest('.gbf-faq-row').remove();gbfUpdateCount();">&#x2715; Remove</button>
+                    <button type="button" class="gbf-faq-remove" onclick="gbfRemoveFaqRow(this.closest('.gbf-faq-row'));">&#x2715; Remove</button>
                     <label>Question</label>
                     <input type="text" name="gbf_faq_q[]" value="<?php echo esc_attr($item['q'] ?? ''); ?>" placeholder="e.g. What is a fire door inspection?">
                     <label style="margin-top:8px;">Answer</label>
-                    <textarea name="gbf_faq_a[]" placeholder="Write the answer here..."><?php echo esc_textarea($item['a'] ?? ''); ?></textarea>
+                    <?php /* Unique id per answer, but keep name="gbf_faq_a[]" so the array POST shape is unchanged. */ ?>
+                    <textarea id="gbf_faq_a_<?php echo (int) $i; ?>" name="gbf_faq_a[]" placeholder="Write the answer here..."><?php echo esc_textarea($item['a'] ?? ''); ?></textarea>
                 </div>
                 <?php endforeach; ?>
             </div>
@@ -157,22 +201,83 @@ function griol_blog_format_render($post) {
         </div>
     </div>
     <script>
-    document.getElementById('gbf-add-faq').addEventListener('click', function(){
-        var row = document.createElement('div');
-        row.className = 'gbf-faq-row';
-        row.innerHTML = '<button type="button" class="gbf-faq-remove" onclick="this.closest(\'.gbf-faq-row\').remove();gbfUpdateCount();">&#x2715; Remove</button>'
-            + '<label>Question</label>'
-            + '<input type="text" name="gbf_faq_q[]" placeholder="e.g. How often should fire doors be inspected?">'
-            + '<label style="margin-top:8px;">Answer</label>'
-            + '<textarea name="gbf_faq_a[]" placeholder="Write the answer here..."></textarea>';
-        document.getElementById('gbf-faq-rows').appendChild(row);
-        gbfUpdateCount();
-        row.querySelector('input').focus();
-    });
-    function gbfUpdateCount(){
-        var n = document.querySelectorAll('.gbf-faq-row').length;
-        document.getElementById('gbf-faq-count').textContent = n + ' FAQ(s)';
-    }
+    /*
+     * FAQ rich-text answers.
+     *
+     * TinyMCE inside repeatable rows is more involved than a static editor:
+     *  - every answer textarea needs a UNIQUE id (name stays "gbf_faq_a[]" so
+     *    the POST array shape is unchanged),
+     *  - editors must be initialised via wp.editor.initialize() AFTER the
+     *    textarea is in the DOM,
+     *  - editors must be torn down with wp.editor.removeEditor() BEFORE their
+     *    row is removed, otherwise orphaned TinyMCE instances leak, and
+     *  - on submit we call tinymce.triggerSave() so every editor flushes its
+     *    HTML back into its textarea before the form posts (WP normally does
+     *    this on the classic post form, but we guard it explicitly).
+     */
+    (function(){
+        // Seed the counter past the server-rendered rows so new ids never clash.
+        var gbfFaqIdx = <?php echo count($existing_faqs); ?>;
+
+        function gbfInitEditor(id){
+            if (window.wp && wp.editor && typeof wp.editor.initialize === 'function') {
+                wp.editor.initialize(id, {
+                    tinymce: {
+                        wpautop: true,
+                        toolbar1: 'bold,italic,bullist,numlist,link,unlink,undo,redo'
+                    },
+                    quicktags: true,
+                    mediaButtons: false
+                });
+            }
+        }
+
+        // Initialise editors for the server-rendered (existing) answer fields.
+        document.querySelectorAll('#gbf-faq-rows .gbf-faq-row textarea[id^="gbf_faq_a_"]').forEach(function(ta){
+            gbfInitEditor(ta.id);
+        });
+
+        // Expose remove handler (also used by inline onclick on server rows).
+        window.gbfRemoveFaqRow = function(row){
+            if (!row) return;
+            var ta = row.querySelector('textarea[id^="gbf_faq_a_"]');
+            if (ta && window.wp && wp.editor && typeof wp.editor.removeEditor === 'function') {
+                wp.editor.removeEditor(ta.id);
+            }
+            row.remove();
+            gbfUpdateCount();
+        };
+
+        document.getElementById('gbf-add-faq').addEventListener('click', function(){
+            var id = 'gbf_faq_a_' + (gbfFaqIdx++);
+            var row = document.createElement('div');
+            row.className = 'gbf-faq-row';
+            row.innerHTML = '<button type="button" class="gbf-faq-remove" onclick="gbfRemoveFaqRow(this.closest(\'.gbf-faq-row\'));">&#x2715; Remove</button>'
+                + '<label>Question</label>'
+                + '<input type="text" name="gbf_faq_q[]" placeholder="e.g. How often should fire doors be inspected?">'
+                + '<label style="margin-top:8px;">Answer</label>'
+                + '<textarea id="' + id + '" name="gbf_faq_a[]" placeholder="Write the answer here..."></textarea>';
+            document.getElementById('gbf-faq-rows').appendChild(row);
+            gbfInitEditor(id);
+            gbfUpdateCount();
+            row.querySelector('input').focus();
+        });
+
+        // Flush all TinyMCE editors back to their textareas before the post saves.
+        var postForm = document.getElementById('post');
+        if (postForm) {
+            postForm.addEventListener('submit', function(){
+                if (window.tinymce && typeof tinymce.triggerSave === 'function') {
+                    tinymce.triggerSave();
+                }
+            });
+        }
+
+        window.gbfUpdateCount = function(){
+            var n = document.querySelectorAll('.gbf-faq-row').length;
+            document.getElementById('gbf-faq-count').textContent = n + ' FAQ(s)';
+        };
+    })();
     </script>
     <?php
 }
@@ -193,8 +298,9 @@ add_action('save_post', function ($post_id) {
     }
 
     // Save FAQ rows as JSON
-    $questions = array_map('sanitize_text_field',    array_map('wp_unslash', (array) ($_POST['gbf_faq_q'] ?? [])));
-    $answers   = array_map('sanitize_textarea_field', array_map('wp_unslash', (array) ($_POST['gbf_faq_a'] ?? [])));
+    $questions = array_map('sanitize_text_field', array_map('wp_unslash', (array) ($_POST['gbf_faq_q'] ?? [])));
+    // Answers are now rich text (TinyMCE) — preserve HTML (e.g. bullet lists) with wp_kses_post.
+    $answers   = array_map(function ($a) { return wp_kses_post($a); }, array_map('wp_unslash', (array) ($_POST['gbf_faq_a'] ?? [])));
     $faqs = [];
     foreach ($questions as $i => $q) {
         if (trim($q) === '' && trim($answers[$i] ?? '') === '') continue;
