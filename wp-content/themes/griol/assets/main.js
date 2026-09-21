@@ -43,23 +43,28 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // ── FAQ Accordion ──
-  document.querySelectorAll('.gbf-acc-trigger').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      var item   = btn.closest('.gbf-acc-item');
-      var isOpen = item.classList.contains('is-open');
+  // Use event delegation so it keeps working even if the FAQ markup is
+  // rendered/updated after load, and so a missing element never breaks it.
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('.gbf-acc-trigger') : null;
+    if (!btn) return;
 
-      // Close all
-      document.querySelectorAll('.gbf-acc-item').forEach(function (o) {
-        o.classList.remove('is-open');
-        o.querySelector('.gbf-acc-trigger').setAttribute('aria-expanded', 'false');
-      });
+    var item = btn.closest('.gbf-acc-item');
+    if (!item) return;
+    var isOpen = item.classList.contains('is-open');
 
-      // Open clicked one if it was closed
-      if (!isOpen) {
-        item.classList.add('is-open');
-        btn.setAttribute('aria-expanded', 'true');
-      }
+    // Close all
+    document.querySelectorAll('.gbf-acc-item').forEach(function (o) {
+      o.classList.remove('is-open');
+      var t = o.querySelector('.gbf-acc-trigger');
+      if (t) t.setAttribute('aria-expanded', 'false');
     });
+
+    // Open clicked one if it was closed
+    if (!isOpen) {
+      item.classList.add('is-open');
+      btn.setAttribute('aria-expanded', 'true');
+    }
   });
 
   // ── Load More Blog Posts ──
