@@ -14,7 +14,8 @@ $dir = get_template_directory_uri() . '/assets/images';
   <div class="irc-hero">
 
     <!-- BG IMAGE -->
-    <img class="irc-hero-bg" src="<?php echo get_template_directory_uri(); ?>/assets/compliance.jpg" alt="Inspection Costs">
+    <img class="irc-hero-bg" src="<?php echo get_template_directory_uri(); ?>/assets/compliance.jpg"
+      alt="Inspection Costs">
 
     <!-- OVERLAY -->
     <div class="irc-hero-overlay"></div>
@@ -54,12 +55,12 @@ $dir = get_template_directory_uri() . '/assets/images';
       <!-- BUTTONS -->
       <div class="irc-hero-buttons">
 
-        <a href="#quote" class="btn-fire irc-btn">
+        <a href="<?php echo home_url('/contact'); ?>" class="btn-fire irc-btn">
           Get a Fixed-Price Quote
         </a>
 
-        <a href="tel:02034882247" class="btn-outline irc-btn">
-          ☎ Call 020 3488 2247
+        <a href="tel:+44 7480 998546" class="btn-outline irc-btn">
+          ☎ Call +44 7480 998546
         </a>
 
       </div>
@@ -602,7 +603,7 @@ $dir = get_template_directory_uri() . '/assets/images';
           mobilisation
         </div>
 
-        <a href="#" style="
+        <a href="<?php echo home_url('/inspection-repair-cost'); ?>" style="
                 display:inline-flex;
                 align-items:center;
                 gap:10px;
@@ -680,12 +681,14 @@ FULL FIRE DOOR SERVICES SECTION
     <div style="
       background:#fff; border-radius:28px; padding:50px; margin-bottom:45px; box-shadow:0 10px 40px rgba(0,0,0,0.06);">
 
-      <div style="
+      <div
+        style="
         display:flex; justify-content:space-between; align-items:center; gap:20px; flex-wrap:wrap; margin-bottom:40px;">
 
         <div>
 
-          <span style="
+          <span
+            style="
             color:#dc2626; font-size:13px; font-weight:700; letter-spacing:2px; text-transform:uppercase; display:block; margin-bottom:10px;">
             Remedial Works
           </span>
@@ -772,7 +775,8 @@ FULL FIRE DOOR SERVICES SECTION
       </div>
 
       <!-- CTA -->
-      <div style="
+      <div
+        style="
         margin-top:35px; background:#111827; border-radius:22px; padding:35px; display:flex; justify-content:space-between; align-items:center; gap:25px; flex-wrap:wrap;">
 
         <div style="max-width:760px;">
@@ -790,7 +794,8 @@ FULL FIRE DOOR SERVICES SECTION
 
         </div>
 
-        <a href="#" style="
+        <a href="<?php echo home_url('/inspection-repair-cost'); ?>"
+          style="
           background:#dc2626; color:#fff; text-decoration:none; padding:16px 34px; border-radius:12px; font-weight:700; white-space:nowrap;">
           Book Combined Visit
         </a>
@@ -1205,66 +1210,7 @@ FULL FIRE DOOR SERVICES SECTION
 
 </section>
 
-.install-card{
-  background:#1f2937;
-  border-radius:20px;
-  padding:30px;
-}
 
-.install-card h4{
-  margin:0 0 16px;
-  font-size:20px;
-  color:#fff;
-  line-height:1.5;
-}
-
-.install-card div{
-  color:#f87171;
-  font-size:34px;
-  font-weight:800;
-}
-
-.inspection-card{
-  background:#f9fafb;
-  border-radius:22px;
-  padding:32px;
-  text-align:center;
-}
-
-.inspection-card h4{
-  margin:0 0 14px;
-  color:#111827;
-  font-size:20px;
-}
-
-.inspection-card div{
-  color:#dc2626;
-  font-size:42px;
-  font-weight:800;
-  margin-bottom:8px;
-}
-
-.inspection-card span{
-  color:#6b7280;
-}
-
-.ppm-card{
-  background:rgba(255,255,255,0.06);
-  border-radius:20px;
-  padding:28px;
-}
-
-.ppm-card h4{
-  margin:0 0 14px;
-  font-size:22px;
-  color:#fff;
-}
-
-.ppm-card p{
-  margin:0;
-  color:#d1d5db;
-  line-height:1.9;
-}
 <!-- FD30S / FD60S SECTION -->
 <section style="padding:90px 20px;background:#f5f5f5;font-family:Inter,sans-serif;">
 
@@ -2795,6 +2741,7 @@ FULL FIRE DOOR SERVICES SECTION
     display: flex;
     align-items: center;
   }
+
   .irc-hero-bg {
     position: absolute;
     inset: 0;
@@ -2802,11 +2749,13 @@ FULL FIRE DOOR SERVICES SECTION
     height: 100%;
     object-fit: cover;
   }
+
   .irc-hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(10,15,25,.92) 10%, rgba(10,15,25,.78) 45%, rgba(10,15,25,.45) 100%);
+    background: linear-gradient(90deg, rgba(10, 15, 25, .92) 10%, rgba(10, 15, 25, .78) 45%, rgba(10, 15, 25, .45) 100%);
   }
+
   .irc-hero-content {
     position: relative;
     z-index: 5;
@@ -2815,6 +2764,7 @@ FULL FIRE DOOR SERVICES SECTION
     margin: auto;
     padding: 120px 20px 140px;
   }
+
   .irc-breadcrumb {
     display: flex;
     flex-wrap: wrap;
@@ -2824,9 +2774,11 @@ FULL FIRE DOOR SERVICES SECTION
     color: #d7d7d7;
     font-size: 14px;
   }
+
   .irc-breadcrumb span:last-child {
     color: #fff;
   }
+
   .irc-hero-label {
     color: #ff3b30;
     text-transform: uppercase;
@@ -2835,14 +2787,16 @@ FULL FIRE DOOR SERVICES SECTION
     font-weight: 600;
     margin-bottom: 18px;
   }
+
   .irc-hero-title {
     max-width: 760px;
-    font-size: clamp(42px,5vw,76px);
+    font-size: clamp(42px, 5vw, 76px);
     line-height: 1.05;
     font-weight: 800;
     color: #fff;
     margin: 0 0 24px;
   }
+
   .irc-hero-desc {
     max-width: 760px;
     color: #d7d7d7;
@@ -2850,12 +2804,14 @@ FULL FIRE DOOR SERVICES SECTION
     line-height: 1.7;
     margin-bottom: 34px;
   }
+
   .irc-hero-buttons {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
     margin-bottom: 28px;
   }
+
   .irc-btn {
     padding: 17px 30px;
     border-radius: 8px;
@@ -2863,6 +2819,7 @@ FULL FIRE DOOR SERVICES SECTION
     font-size: 16px;
     min-width: 220px;
   }
+
   .irc-hero-features {
     display: flex;
     flex-wrap: wrap;
@@ -2879,18 +2836,21 @@ FULL FIRE DOOR SERVICES SECTION
     margin: -70px auto 0;
     padding: 0 20px 70px;
   }
+
   .irc-floating-stats {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(240px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 22px;
   }
+
   .stat-card {
     background: #fff;
     border-radius: 16px;
     padding: 30px 26px;
-    box-shadow: 0 10px 35px rgba(0,0,0,.10);
+    box-shadow: 0 10px 35px rgba(0, 0, 0, .10);
     border: 1px solid #ececec;
   }
+
   .stat-card-label {
     color: #7d7d7d;
     text-transform: uppercase;
@@ -2899,23 +2859,27 @@ FULL FIRE DOOR SERVICES SECTION
     margin-bottom: 18px;
     font-weight: 600;
   }
+
   .stat-card-price {
     display: flex;
     align-items: flex-end;
     gap: 8px;
     margin-bottom: 10px;
   }
+
   .stat-card-from {
     color: #ff3b30;
     font-size: 18px;
     font-weight: 600;
   }
+
   .stat-card-amount {
     color: #131722;
     font-size: 56px;
     line-height: 1;
     font-weight: 800;
   }
+
   .stat-card-per {
     color: #777;
     font-size: 14px;
@@ -2926,6 +2890,7 @@ FULL FIRE DOOR SERVICES SECTION
     background: #f5f5f5;
     padding: 90px 20px;
   }
+
   .irc-container {
     max-width: 1100px;
     margin: auto;
@@ -2937,32 +2902,36 @@ FULL FIRE DOOR SERVICES SECTION
     grid-template-columns: repeat(2, 1fr);
     gap: 18px;
   }
-  .repair-card{
-    background:#f9fafb;
-    border:1px solid #e5e7eb;
-    border-radius:16px;
-    padding:22px;
-    display:flex;
-    justify-content:space-between;
-    gap:20px;
-    align-items:center;
-    transition:0.3s ease;
+
+  .repair-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    transition: 0.3s ease;
   }
-  .repair-card:hover{
-    transform:translateY(-4px);
-    border-color:#dc2626;
+
+  .repair-card:hover {
+    transform: translateY(-4px);
+    border-color: #dc2626;
   }
-  .repair-card span{
-    font-size:17px;
-    font-weight:600;
-    color:#111827;
-    line-height:1.6;
+
+  .repair-card span {
+    font-size: 17px;
+    font-weight: 600;
+    color: #111827;
+    line-height: 1.6;
   }
-  .repair-card strong{
-    color:#dc2626;
-    font-size:24px;
-    font-weight:800;
-    white-space:nowrap;
+
+  .repair-card strong {
+    color: #dc2626;
+    font-size: 24px;
+    font-weight: 800;
+    white-space: nowrap;
   }
 
   /* INSTALL GRID */
@@ -2976,13 +2945,13 @@ FULL FIRE DOOR SERVICES SECTION
   .inspection-grid {
     display: grid;
     gap: 18px;
-    grid-template-columns: repeat(4,1fr);
+    grid-template-columns: repeat(4, 1fr);
   }
 
   /* FD GRID */
   .fd-grid {
     display: grid;
-    grid-template-columns: repeat(2,1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 22px;
     margin-bottom: 35px;
   }
@@ -2990,7 +2959,7 @@ FULL FIRE DOOR SERVICES SECTION
   /* VARIABLES GRID */
   .variables-grid {
     display: grid;
-    grid-template-columns: repeat(3,1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 26px;
   }
 
@@ -3009,21 +2978,25 @@ FULL FIRE DOOR SERVICES SECTION
     font-family: Arial, sans-serif;
     color: #111827;
   }
+
   .quote-faq-container {
     max-width: 1200px;
     margin: 0 auto;
   }
+
   .quote-section-final {
     margin-bottom: 100px;
   }
+
   .quote-cards-grid-final {
     display: flex;
     gap: 24px;
     flex-wrap: wrap;
   }
+
   .faq-grid-final {
     display: grid;
-    grid-template-columns: repeat(auto-fit,minmax(450px,1fr));
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
     gap: 20px;
   }
 
@@ -3034,10 +3007,12 @@ FULL FIRE DOOR SERVICES SECTION
     text-align: center;
     font-family: Arial, sans-serif;
   }
+
   .cta-final-container {
     max-width: 1100px;
     margin: 0 auto;
   }
+
   .cta-final-buttons {
     display: flex;
     justify-content: center;
@@ -3051,10 +3026,12 @@ FULL FIRE DOOR SERVICES SECTION
     padding: 90px 20px;
     font-family: Arial, sans-serif;
   }
+
   .related-guides-container {
     max-width: 1200px;
     margin: 0 auto;
   }
+
   .related-guides-header {
     display: flex;
     justify-content: space-between;
@@ -3063,6 +3040,7 @@ FULL FIRE DOOR SERVICES SECTION
     flex-wrap: wrap;
     gap: 20px;
   }
+
   .related-guides-grid {
     display: flex;
     gap: 24px;
@@ -3076,6 +3054,7 @@ FULL FIRE DOOR SERVICES SECTION
     padding: 70px 0;
     font-family: Arial, sans-serif;
   }
+
   .final-cta-container {
     max-width: 1100px;
     margin: 0 auto;
@@ -3086,9 +3065,11 @@ FULL FIRE DOOR SERVICES SECTION
     gap: 30px;
     padding: 0 20px;
   }
+
   .final-cta-left {
     max-width: 600px;
   }
+
   .final-cta-buttons {
     display: flex;
     align-items: center;
@@ -3097,6 +3078,7 @@ FULL FIRE DOOR SERVICES SECTION
 
   /* RESPONSIVE STYLES */
   @media(max-width: 991px) {
+
     .repair-grid,
     .install-grid,
     .ppm-grid,
@@ -3105,18 +3087,31 @@ FULL FIRE DOOR SERVICES SECTION
     .variables-grid {
       grid-template-columns: 1fr 1fr !important;
     }
+
     .ppm-grid-final {
       grid-template-columns: 1fr !important;
     }
   }
 
   @media(max-width: 768px) {
-    .irc-hero-title, .irc-section-title, .fd-header h2, .variables-header h2, .ppm-final-header h2, .risk-header h2, .quote-faq-section-final h2, .cta-final-section h2, .related-guides-header h2, .final-cta-left h2 {
+
+    .irc-hero-title,
+    .irc-section-title,
+    .fd-header h2,
+    .variables-header h2,
+    .ppm-final-header h2,
+    .risk-header h2,
+    .quote-faq-section-final h2,
+    .cta-final-section h2,
+    .related-guides-header h2,
+    .final-cta-left h2 {
       font-size: 38px !important;
     }
+
     h3 {
       font-size: 30px !important;
     }
+
     .repair-grid,
     .install-grid,
     .ppm-grid,
@@ -3127,20 +3122,57 @@ FULL FIRE DOOR SERVICES SECTION
     .faq-grid-final {
       grid-template-columns: 1fr !important;
     }
-    .irc-section, .related-guides-section, .final-cta-section, .cta-final-section, .quote-faq-section-final, .ppm-final-section, .risk-section, .fd-section {
+
+    .irc-section,
+    .related-guides-section,
+    .final-cta-section,
+    .cta-final-section,
+    .quote-faq-section-final,
+    .ppm-final-section,
+    .risk-section,
+    .fd-section {
       padding: 70px 16px !important;
     }
-    .installation-section, .inspection-pricing-section, .ppm-section, .ppm-rates-box, .ppm-cta-box, .fd-grid > div, .variables-card, .ppm-final-card-dark, .ppm-final-card-light, .risk-card, .quote-card-final, .faq-item-final, .related-guide-card {
+
+    .installation-section,
+    .inspection-pricing-section,
+    .ppm-section,
+    .ppm-rates-box,
+    .ppm-cta-box,
+    .fd-grid>div,
+    .variables-card,
+    .ppm-final-card-dark,
+    .ppm-final-card-light,
+    .risk-card,
+    .quote-card-final,
+    .faq-item-final,
+    .related-guide-card {
       padding: 28px !important;
     }
+
     .irc-floating-stats {
-        grid-template-columns: 1fr 1fr !important;
+      grid-template-columns: 1fr 1fr !important;
     }
-    .ppm-title { font-size: 38px !important; }
-    .ppm-features-title { font-size: 30px !important; }
-    .ppm-cta-title { font-size: 32px !important; }
-    .quote-description { font-size: 18px; }
-    .quote-section-final { margin-bottom: 70px; }
+
+    .ppm-title {
+      font-size: 38px !important;
+    }
+
+    .ppm-features-title {
+      font-size: 30px !important;
+    }
+
+    .ppm-cta-title {
+      font-size: 32px !important;
+    }
+
+    .quote-description {
+      font-size: 18px;
+    }
+
+    .quote-section-final {
+      margin-bottom: 70px;
+    }
   }
 </style>
 
