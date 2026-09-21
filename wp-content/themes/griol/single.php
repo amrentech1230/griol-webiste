@@ -140,26 +140,19 @@
             echo gbf_render_text($g('conclusion'));
         endif;
 
-        // FAQ Accordion
+        // FAQ
         $faq_raw = $g('faq');
         if ($faq_raw) :
             $faqs = json_decode($faq_raw, true);
             if (is_array($faqs) && $faqs) :
                 echo '<h2 id="gbf-faq">Frequently Asked Questions</h2>';
-                echo '<div class="gbf-faq-accordion">';
+                echo '<div class="gbf-faq">';
                 foreach ($faqs as $i => $item) :
                     if (empty($item['q'])) continue;
-                    $num = $i + 1;
-                    echo '<div class="gbf-acc-item" id="gbf-acc-' . $num . '">';
-                    echo '<button class="gbf-acc-trigger" aria-expanded="false">';
-                    echo '<span class="gbf-acc-num">' . $num . '</span>';
-                    echo '<span class="gbf-acc-q">' . esc_html($item['q']) . '</span>';
-                    echo '<span class="gbf-acc-icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg></span>';
-                    echo '</button>';
-                    echo '<div class="gbf-acc-panel">';
-                    echo '<p class="gbf-acc-a">' . esc_html($item['a'] ?? '') . '</p>';
-                    echo '</div>';
-                    echo '</div>';
+                  echo '<details class="gbf-faq-item">';
+                  echo '<summary class="gbf-faq-q">' . esc_html(($i + 1) . '. ' . $item['q']) . '</summary>';
+                  echo '<div class="gbf-faq-a">' . esc_html($item['a'] ?? '') . '</div>';
+                  echo '</details>';
                 endforeach;
                 echo '</div>';
             endif;
